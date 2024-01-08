@@ -1,20 +1,14 @@
 package tech.gamesupport.center.client;
 
 import tech.gamesupport.center.client.org.OrgService;
-import tech.gamesupport.center.client.org.model.OpenUserInfo;
 
 public class ZeeOpenClient {
 
-    private String openUrl;
-    private String projectKey;
-    private String projectSecret;
-    private String env;
-
-    private ClientState clientState = new ClientState();
+    private final ClientState clientState = new ClientState();
 
     private OrgService org;
 
-    private ZeeOpenClient() {
+    private ZeeOpenClient(ClientState clientState) {
         org = new OrgService(clientState);
     }
 
@@ -26,15 +20,14 @@ public class ZeeOpenClient {
         return new ZeeOpenClientBuilder();
     }
 
-
     public static class ZeeOpenClientBuilder {
-        private String openUrl;
+        private String baseUrl;
         private String projectKey;
         private String projectSecret;
         private String env;
 
-        public ZeeOpenClientBuilder openUrl(String openUrl) {
-            this.openUrl = openUrl;
+        public ZeeOpenClientBuilder baseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
             return this;
         }
 
@@ -54,15 +47,17 @@ public class ZeeOpenClient {
         }
 
         public ZeeOpenClient build() {
-            ZeeOpenClient client = new ZeeOpenClient();
-            client.openUrl = openUrl;
-            client.projectKey = projectKey;
-            client.projectSecret = projectSecret;
-            client.env = env;
-            return client;
+            ClientState clientState = new ClientState();
+            clientState.setBaseUrl(baseUrl);
+            clientState.setProjectKey(projectKey);
+            clientState.setProjectSecret(projectSecret);
+            clientState.setEnv(env);
+            return new ZeeOpenClient(clientState);
         }
 
     }
+
+
 
 
 }
