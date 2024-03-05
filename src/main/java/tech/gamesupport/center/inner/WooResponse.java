@@ -1,6 +1,6 @@
-package tech.gamesupport.center.client;
+package tech.gamesupport.center.inner;
 
-public class ZeeResponse<T> {
+public class WooResponse<T> {
 
     private int code;
     private String message;
