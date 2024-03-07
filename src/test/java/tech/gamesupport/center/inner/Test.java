@@ -9,11 +9,11 @@ public class Test {
                 .builder()
                 .baseUrl("http://localhost:8081")
                 .env("dev")
-                .productId("pro_4w1hjuzx8df9zhk3")
-                .productSecret("GfbhSiyw3A3rIGoYlII1gWPaKIwvsq6j")
+                .productId("pro_albckmilr3mu80346vrxkkslvjqt")
+                .productSecret("v44k97LnAW12dJ0iOkcTVZASSJLVyojr")
                 .build();
 
-        UserIdentity userIdentity = client.account().fetchCookie("7j5lc6ai0uc6yaf8");
+        UserIdentity userIdentity = client.account().auth("ir8yuraz6e74dx4v");
         System.out.println("userIdentity = " + userIdentity);
     }
 }

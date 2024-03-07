@@ -15,10 +15,10 @@ public class AccountService {
         this.clientConfig = clientConfig;
     }
 
-    public UserIdentity fetchCookie(String ticket) {
+    public UserIdentity auth(String ticket) {
         Map<String, Object> map = new HashMap<>();
         map.put("ticket", ticket);
-        return clientConfig.sendGet("/account/fetchCookie", map, UserIdentity.class);
+        return clientConfig.sendGet("/account/auth", map, UserIdentity.class);
     }
 
 }

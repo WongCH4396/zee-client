@@ -46,10 +46,8 @@ public class InternalWooClient {
         }
 
         public InternalWooClient build() {
-            ClientConfig clientConfig = new ClientConfig();
+            ClientConfig clientConfig = new ClientConfig(productId, productSecret);
             clientConfig.setBaseUrl(baseUrl);
-            clientConfig.setProductId(productId);
-            clientConfig.setProductSecret(productSecret);
             return new InternalWooClient(clientConfig);
         }
 
