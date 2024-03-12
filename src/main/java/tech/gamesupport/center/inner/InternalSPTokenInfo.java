@@ -1,11 +1,21 @@
 package tech.gamesupport.center.inner;
 
+import java.time.ZonedDateTime;
+
 public class InternalSPTokenInfo {
 
     private String token;
     private long expiresAt;
     private String refreshToken;
     private long refreshExpiresAt;
+
+    public boolean isTokenValid() {
+        return expiresAt > ZonedDateTime.now().toEpochSecond();
+    }
+
+    public boolean isRefreshTokenValid() {
+        return refreshExpiresAt > ZonedDateTime.now().toEpochSecond();
+    }
 
     public String getToken() {
         return token;

@@ -3,7 +3,9 @@ package tech.gamesupport.center.inner;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.squareup.okhttp.*;
+import tech.gamesupport.center.inner.account.model.UserTokenInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,13 +16,12 @@ import java.util.stream.Collectors;
 public class ClientConfig {
 
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private final String productId;
     private final String productSecret;
 
     private String baseUrl;
-    private String token;
-    private long expiresAt;
+    private volatile InternalSPTokenInfo spTokenInfo = new InternalSPTokenInfo();
 
     private ClientExceptionConverter clientExceptionConverter = (code, msg) -> new RuntimeException(msg);
     private OtherExceptionConverter otherExceptionConverter = (e) -> new RuntimeException(e.getException());
@@ -30,22 +31,32 @@ public class ClientConfig {
         this.productSecret = productSecret;
     }
 
-    public boolean isTokenValid(String token, long expiresAt) {
-        return token != null && expiresAt > ZonedDateTime.now().toEpochSecond();
-    }
-
     public String fetchSPToken() throws Exception {
-        if (isTokenValid(token, expiresAt)) {
-            return token;
+        if (spTokenInfo.isTokenValid()) {
+            return spTokenInfo.getToken();
         }
         synchronized (this) {
-            if (isTokenValid(token, expiresAt)) {
-                return token;
+            if (spTokenInfo.isTokenValid()) {
+                return spTokenInfo.getToken();
             }
-            InternalSPTokenInfo result = auth();
-            setToken(result.getToken());
-            setExpiresAt(result.getExpiresAt());
-            return token;
+            if (spTokenInfo.isRefreshTokenValid()) {
+                spTokenInfo = auth();
+                return spTokenInfo.getToken();
+            }
+            spTokenInfo = auth();
+            return spTokenInfo.getToken();
+        }
+    }
+
+    public UserTokenInfo fetchUserToken(UserTokenInfo userTokenInfo) {
+        if (userTokenInfo.isTokenValid()) {
+            return userTokenInfo;
+        }
+        synchronized (this) {
+            if (userTokenInfo.isTokenValid()) {
+                return userTokenInfo;
+            }
+            return userTokenInfo;
         }
     }
 
@@ -98,6 +109,13 @@ public class ClientConfig {
     public <T> T sendGet(String path,
                          Map<String, Object> params,
                          Class<T> responseType) {
+        return sendGet(path, params, responseType, null);
+    }
+
+    public <T> T sendGet(String path,
+                         Map<String, Object> params,
+                         Class<T> responseType,
+                         RequestOptions options) {
         int httpStatusCode = -1;
         try {
             ObjectMapper objectMapper = getObjectMapper();
@@ -105,6 +123,12 @@ public class ClientConfig {
             // 创建 GET 请求
             Request.Builder builder = new Request.Builder();
             builder.header("Service-Provider-Auth", String.format("Bearer %s", fetchSPToken()));
+            if (options != null) {
+                if (options.hasUserToken()) {
+                    UserTokenInfo userTokenInfo = fetchUserToken(options.getUserTokenInfo());
+                    builder.header("Authorization", String.format("Bearer %s", userTokenInfo.getToken()));
+                }
+            }
             String queryString = "";
             if (params.size() > 0) {
                 queryString = "?" + params
@@ -159,14 +183,6 @@ public class ClientConfig {
 
     public ObjectMapper getObjectMapper() {
         return objectMapper;
-    }
-
-    private void setToken(String token) {
-        this.token = token;
-    }
-
-    public void setExpiresAt(long expiresAt) {
-        this.expiresAt = expiresAt;
     }
 
     public ClientExceptionConverter getClientExceptionConverter() {

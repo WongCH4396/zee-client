@@ -1,11 +1,21 @@
 package tech.gamesupport.center.inner.account.model;
 
-public class ProductUserTokenInfo {
+import java.time.ZonedDateTime;
+
+public class UserTokenInfo {
 
     private String token;
     private long expiresAt;
     private String refreshToken;
     private long refreshExpiresAt;
+
+    public boolean isTokenValid() {
+        return expiresAt > ZonedDateTime.now().toEpochSecond();
+    }
+
+    public boolean isRefreshTokenValid() {
+        return refreshExpiresAt > ZonedDateTime.now().toEpochSecond();
+    }
 
     public String getToken() {
         return token;
