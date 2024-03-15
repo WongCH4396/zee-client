@@ -16,6 +16,7 @@ public class InternalUserInfo {
 
     private String jobTitle;
     private ZonedDateTime joinDate;
+    private Boolean ifEnabled;
 
     public String getUniversalUserId() {
         return universalUserId;
@@ -87,5 +88,13 @@ public class InternalUserInfo {
 
     public void setJoinDate(ZonedDateTime joinDate) {
         this.joinDate = joinDate;
+    }
+
+    public Boolean getIfEnabled() {
+        return ifEnabled;
+    }
+
+    public void setIfEnabled(Boolean ifEnabled) {
+        this.ifEnabled = ifEnabled;
     }
 }

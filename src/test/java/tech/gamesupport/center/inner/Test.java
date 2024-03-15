@@ -1,13 +1,12 @@
 package tech.gamesupport.center.inner;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
-import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+import com.squareup.okhttp.OkHttpClient;
 import tech.gamesupport.center.inner.account.model.InternalUserInfo;
+import tech.gamesupport.center.inner.account.model.UserTokenInfo;
 
 public class Test {
 
@@ -16,16 +15,23 @@ public class Test {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .registerModule(new JavaTimeModule());
+
         InternalWooClient client = InternalWooClient
                 .builder()
                 .baseUrl("http://localhost:8081")
-                .env("dev")
                 .productId("pro_albckmilr3mu80346vrxkkslvjqt")
                 .productSecret("v44k97LnAW12dJ0iOkcTVZASSJLVyojr")
+                .httpClient(new OkHttpClient())
+                .objectMapper(objectMapper)
+                .clientExceptionConverter((code, msg) -> new RuntimeException(code + " " + msg))
+                .otherExceptionConverter((e) -> new RuntimeException(e.getException()))
+                .onUserTokenUpdated((userTokenInfo -> {
+                    System.out.println("userTokenInfo = " + userTokenInfo);
+                }))
                 .build();
 
-//        UserTokenInfo userTokenInfo = client.account().auth("vz93izl57v0m0rpu");
-        UserTokenInfo userTokenInfo = objectMapper.readValue(tokenObjStr(), UserTokenInfo.class);
+        UserTokenInfo userTokenInfo = client.account().auth("c3l18elh6iailbl6");
+//        UserTokenInfo userTokenInfo = objectMapper.readValue(tokenObjStr(), UserTokenInfo.class);
         System.out.println("objectMapper.writeValueAsString(info) = " + objectMapper.writeValueAsString(userTokenInfo));
         InternalUserInfo info = client.account().info(userTokenInfo);
         System.out.println(objectMapper.writeValueAsString(info));

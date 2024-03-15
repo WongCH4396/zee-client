@@ -1,6 +1,11 @@
 package tech.gamesupport.center.inner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
 import tech.gamesupport.center.inner.account.AccountService;
+import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+
+import java.util.function.Consumer;
 
 public class InternalWooClient {
 
@@ -19,11 +24,15 @@ public class InternalWooClient {
     }
 
     public static class WooClientBuilder {
-        
+
         private String baseUrl;
         private String productId;
         private String productSecret;
-        private String env;
+        private ClientExceptionConverter clientExceptionConverter;
+        private OtherExceptionConverter otherExceptionConverter;
+        private OkHttpClient httpClient;
+        private ObjectMapper objectMapper;
+        private Consumer<UserTokenInfo> onUserTokenInfoUpdated;
 
         public WooClientBuilder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
@@ -40,14 +49,41 @@ public class InternalWooClient {
             return this;
         }
 
-        public WooClientBuilder env(String env) {
-            this.env = env;
+        public WooClientBuilder clientExceptionConverter(ClientExceptionConverter clientExceptionConverter) {
+            this.clientExceptionConverter = clientExceptionConverter;
+            return this;
+        }
+
+        public WooClientBuilder otherExceptionConverter(OtherExceptionConverter otherExceptionConverter) {
+            this.otherExceptionConverter = otherExceptionConverter;
+            return this;
+        }
+
+        public WooClientBuilder httpClient(OkHttpClient httpClient) {
+            this.httpClient = httpClient;
+            return this;
+        }
+
+        public WooClientBuilder objectMapper(ObjectMapper objectMapper) {
+            this.objectMapper = objectMapper;
+            return this;
+        }
+
+        public WooClientBuilder onUserTokenUpdated(Consumer<UserTokenInfo> onUserTokenInfoUpdated) {
+            this.onUserTokenInfoUpdated = onUserTokenInfoUpdated;
             return this;
         }
 
         public InternalWooClient build() {
-            ClientConfig clientConfig = new ClientConfig(productId, productSecret);
+            ClientConfig clientConfig = new ClientConfig();
             clientConfig.setBaseUrl(baseUrl);
+            clientConfig.setProductId(productId);
+            clientConfig.setProductSecret(productSecret);
+            clientConfig.setClientExceptionConverter(clientExceptionConverter);
+            clientConfig.setOtherExceptionConverter(otherExceptionConverter);
+            clientConfig.setHttpClient(httpClient);
+            clientConfig.setObjectMapper(objectMapper);
+            clientConfig.setOnUserTokenInfoUpdated(onUserTokenInfoUpdated);
             return new InternalWooClient(clientConfig);
         }
 
