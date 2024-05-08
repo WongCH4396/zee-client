@@ -38,5 +38,13 @@ public class AccountService {
         return InternalRequest.send("/account/info", clientConfig, InternalUserInfo.class, requestOptions);
     }
 
+    public InternalUserInfo legacyInfo(UserTokenInfo userTokenInfo) {
+        RequestOptions requestOptions = new RequestOptions.RequestOptionsBuilder()
+                .get()
+                .userTokenInfo(userTokenInfo)
+                .build();
+        return InternalRequest.send("/account/legacyInfo", clientConfig, InternalUserInfo.class, requestOptions);
+    }
+
 
 }

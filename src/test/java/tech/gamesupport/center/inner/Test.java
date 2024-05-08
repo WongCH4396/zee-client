@@ -8,6 +8,16 @@ import com.squareup.okhttp.OkHttpClient;
 import tech.gamesupport.center.inner.account.model.InternalUserInfo;
 import tech.gamesupport.center.inner.account.model.UserTokenInfo;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.spi.CharsetProvider;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public class Test {
 
     public static void main(String[] args) throws Exception {
@@ -30,15 +40,19 @@ public class Test {
                 }))
                 .build();
 
-        UserTokenInfo userTokenInfo = client.account().auth("c3l18elh6iailbl6");
-//        UserTokenInfo userTokenInfo = objectMapper.readValue(tokenObjStr(), UserTokenInfo.class);
+
+//        UserTokenInfo userTokenInfo = client.account().auth("ep37uul5j20in3dh");
+        UserTokenInfo userTokenInfo = objectMapper.readValue(tokenObjStr(), UserTokenInfo.class);
         System.out.println("objectMapper.writeValueAsString(info) = " + objectMapper.writeValueAsString(userTokenInfo));
-        InternalUserInfo info = client.account().info(userTokenInfo);
+        InternalUserInfo info = client.account().legacyInfo(userTokenInfo);
         System.out.println(objectMapper.writeValueAsString(info));
     }
 
     public static String tokenObjStr() {
-        return "{\"token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwcm9kdWN0SWQiOiJwcm9fYWxiY2ttaWxyM211ODAzNDZ2cnhra3NsdmpxdCIsInNlc3Npb25JZCI6ImRhNjdhNWY2LTcyZmItNDAyMy1iYWRmLTgzNzhhMjM1NDJjYyIsInR5cGUiOiJiaXoiLCJleHAiOjE3MTAyNTAwOTYsInVzZXJJZCI6InVuaV85NWZuZHVqbGdxbmtkejF3Z21vOHUzMDl0bjZjIiwiaWF0IjoxNzEwMjQyODk2fQ.wquLp2-ydPMEaUIJO6RF3-16mevEbPiWlSJiD3Tql7o\",\"expiresAt\":1710250096,\"refreshToken\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwcm9kdWN0SWQiOiJwcm9fYWxiY2ttaWxyM211ODAzNDZ2cnhra3NsdmpxdCIsInNlc3Npb25JZCI6ImRhNjdhNWY2LTcyZmItNDAyMy1iYWRmLTgzNzhhMjM1NDJjYyIsInR5cGUiOiJyZWZyZXNoIiwiZXhwIjoxNzExNDY4ODAwLCJ1c2VySWQiOiJ1bmlfOTVmbmR1amxncW5rZHoxd2dtbzh1MzA5dG42YyIsImlhdCI6MTcxMDI0Mjg5Nn0.JtT95C3MK47Z8wd33urM1t5vUQBQI9K8UHqkr5bHuPo\",\"refreshExpiresAt\":1711468800,\"refreshTokenValid\":true,\"tokenValid\":true}";
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+        return "{\"token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwcm9kdWN0SWQiOiJwcm9fYWxiY2ttaWxyM211ODAzNDZ2cnhra3NsdmpxdCIsInNlc3Npb25JZCI6ImU4ZmM2ZGJhLWVlMjQtNDgzYy1hNzY0LTI3ZjgzYTU1ODQ1MyIsInR5cGUiOiJiaXoiLCJleHAiOjE3MTUxODg4NTYsInVzZXJJZCI6InVuaV9kdTFtNHJzdW1hNDY0bDZlemJueXplODRqcHhmIiwiaWF0IjoxNzE1MTgxNjU2fQ.4fGKyUCxPBJFUCccvG8eWh9cPxDMe04Gb31BRdjiEZU\",\"expiresAt\":1715188856,\"refreshToken\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwcm9kdWN0SWQiOiJwcm9fYWxiY2ttaWxyM211ODAzNDZ2cnhra3NsdmpxdCIsInNlc3Npb25JZCI6ImU4ZmM2ZGJhLWVlMjQtNDgzYy1hNzY0LTI3ZjgzYTU1ODQ1MyIsInR5cGUiOiJyZWZyZXNoIiwiZXhwIjoxNzE2MzkzNjAwLCJ1c2VySWQiOiJ1bmlfZHUxbTRyc3VtYTQ2NGw2ZXpibnl6ZTg0anB4ZiIsImlhdCI6MTcxNTE4MTY1Nn0.lFmFdFzp5u8HaiQAxV4lmDc7a1xzQvrurtOqpO5N4q4\",\"refreshExpiresAt\":1716393600,\"tokenValid\":true,\"refreshTokenValid\":true}";
     }
+
 
 }

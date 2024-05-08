@@ -18,6 +18,8 @@ public class InternalUserInfo {
     private ZonedDateTime joinDate;
     private Boolean ifEnabled;
 
+    private LegacyInfo legacyInfo;
+
     public String getUniversalUserId() {
         return universalUserId;
     }
@@ -96,5 +98,13 @@ public class InternalUserInfo {
 
     public void setIfEnabled(Boolean ifEnabled) {
         this.ifEnabled = ifEnabled;
+    }
+
+    public LegacyInfo getLegacyInfo() {
+        return legacyInfo;
+    }
+
+    public void setLegacyInfo(LegacyInfo legacyInfo) {
+        this.legacyInfo = legacyInfo;
     }
 }
