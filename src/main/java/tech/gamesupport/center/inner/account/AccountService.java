@@ -4,6 +4,7 @@ import sun.misc.Request;
 import tech.gamesupport.center.inner.ClientConfig;
 import tech.gamesupport.center.inner.InternalRequest;
 import tech.gamesupport.center.inner.RequestOptions;
+import tech.gamesupport.center.inner.account.model.EmptyBody;
 import tech.gamesupport.center.inner.account.model.InternalUserInfo;
 import tech.gamesupport.center.inner.account.model.UserTokenInfo;
 
@@ -44,6 +45,15 @@ public class AccountService {
                 .userTokenInfo(userTokenInfo)
                 .build();
         return InternalRequest.send("/account/legacyInfo", clientConfig, InternalUserInfo.class, requestOptions);
+    }
+
+    public void logout(UserTokenInfo userTokenInfo) {
+        RequestOptions requestOptions = new RequestOptions.RequestOptionsBuilder()
+                .post()
+                .body(EmptyBody.INSTANCE)
+                .userTokenInfo(userTokenInfo)
+                .build();
+        InternalRequest.send("/account/logout", clientConfig, String.class, requestOptions);
     }
 
 
