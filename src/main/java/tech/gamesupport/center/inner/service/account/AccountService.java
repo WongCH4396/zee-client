@@ -1,14 +1,12 @@
-package tech.gamesupport.center.inner.account;
+package tech.gamesupport.center.inner.service.account;
 
-import sun.misc.Request;
-import tech.gamesupport.center.inner.ClientConfig;
-import tech.gamesupport.center.inner.InternalRequest;
-import tech.gamesupport.center.inner.RequestOptions;
-import tech.gamesupport.center.inner.account.model.EmptyBody;
-import tech.gamesupport.center.inner.account.model.InternalUserInfo;
-import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+import tech.gamesupport.center.inner.core.ClientConfig;
+import tech.gamesupport.center.inner.core.InternalRequest;
+import tech.gamesupport.center.inner.core.RequestOptions;
+import tech.gamesupport.center.inner.service.account.model.EmptyBody;
+import tech.gamesupport.center.inner.service.account.model.InternalUserInfo;
+import tech.gamesupport.center.inner.service.account.model.UserTokenInfo;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

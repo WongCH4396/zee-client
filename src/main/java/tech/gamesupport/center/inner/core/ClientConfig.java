@@ -1,9 +1,10 @@
-package tech.gamesupport.center.inner;
+package tech.gamesupport.center.inner.core;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.OkHttpClient;
-import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+import okhttp3.OkHttpClient;
+import tech.gamesupport.center.inner.core.model.InternalSPTokenInfo;
+import tech.gamesupport.center.inner.service.account.model.UserTokenInfo;
 
 import java.util.function.Consumer;
 

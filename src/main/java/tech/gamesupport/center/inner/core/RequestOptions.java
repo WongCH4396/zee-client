@@ -1,6 +1,6 @@
-package tech.gamesupport.center.inner;
+package tech.gamesupport.center.inner.core;
 
-import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+import tech.gamesupport.center.inner.service.account.model.UserTokenInfo;
 
 public class RequestOptions {
 

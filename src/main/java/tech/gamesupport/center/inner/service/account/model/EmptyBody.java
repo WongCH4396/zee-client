@@ -1,4 +1,4 @@
-package tech.gamesupport.center.inner.account.model;
+package tech.gamesupport.center.inner.service.account.model;
 
 public class EmptyBody {
 

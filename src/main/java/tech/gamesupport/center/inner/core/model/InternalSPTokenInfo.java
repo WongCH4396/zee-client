@@ -1,4 +1,4 @@
-package tech.gamesupport.center.inner;
+package tech.gamesupport.center.inner.core.model;
 
 import java.time.ZonedDateTime;
 

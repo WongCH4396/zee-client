@@ -1,4 +1,4 @@
-package tech.gamesupport.center.inner;
+package tech.gamesupport.center.inner.core;
 
 @FunctionalInterface
 public interface ClientExceptionConverter {

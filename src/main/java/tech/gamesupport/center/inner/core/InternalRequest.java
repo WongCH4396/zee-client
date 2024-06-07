@@ -1,10 +1,13 @@
-package tech.gamesupport.center.inner;
+package tech.gamesupport.center.inner.core;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.*;
-import tech.gamesupport.center.inner.account.model.UserTokenInfo;
+import okhttp3.*;
+import tech.gamesupport.center.inner.core.model.InternalSPTokenInfo;
+import tech.gamesupport.center.inner.core.model.ProductTokenVO;
+import tech.gamesupport.center.inner.core.model.WooResponse;
+import tech.gamesupport.center.inner.service.account.model.UserTokenInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -19,7 +22,8 @@ public class InternalRequest {
                              ClientConfig clientConfig,
                              Class<T> responseType,
                              RequestOptions options) {
-        int httpStatusCode = -1;
+        int httpStatus = -1;
+        WooResponse<T> wooResponse;
         try {
             ObjectMapper objectMapper = clientConfig.getObjectMapper();
             OkHttpClient httpClient = clientConfig.getHttpClient();
@@ -84,16 +88,16 @@ public class InternalRequest {
                     .newCall(request)
                     .execute();
             String responseBody = response.body().string();
-            httpStatusCode = response.code();
+            httpStatus = response.code();
             JavaType javaType = objectMapper.getTypeFactory().constructParametricType(WooResponse.class, responseType);
-            WooResponse<T> wooResponse = objectMapper.readValue(responseBody, javaType);
-            if (wooResponse.getCode() != 0) {
-                throw clientConfig.getClientExceptionConverter().convert(wooResponse.getCode(), wooResponse.getMessage());
-            }
-            return wooResponse.getData();
+            wooResponse = objectMapper.readValue(responseBody, javaType);
         } catch (Exception e) {
-            throw clientConfig.getOtherExceptionConverter().convert(ExceptionInfo.of(httpStatusCode, e));
+            throw clientConfig.getOtherExceptionConverter().convert(httpStatus, e);
         }
+        if (wooResponse.getCode() != 0) {
+            throw clientConfig.getClientExceptionConverter().convert(wooResponse.getCode(), wooResponse.getMessage());
+        }
+        return wooResponse.getData();
     }
 
     private static String fetchSPToken(final ClientConfig clientConfig) {
@@ -120,19 +124,19 @@ public class InternalRequest {
         }
     }
 
-    private static String fetchUserToken(final UserTokenInfo userTokenInfo, ClientConfig clientConfig) {
-        if (userTokenInfo.isTokenValid()) {
-            return userTokenInfo.getToken();
+    private static String fetchUserToken(final UserTokenInfo currentTokenInfo, ClientConfig clientConfig) {
+        if (currentTokenInfo.isTokenValid()) {
+            return currentTokenInfo.getToken();
         }
         RequestOptions requestOptions = new RequestOptions.RequestOptionsBuilder()
                 .get()
                 .needsSPToken(true)
-                .userTokenInfo(userTokenInfo)
+                .userTokenInfo(currentTokenInfo)
                 .refreshUserToken(true)
                 .build();
-        UserTokenInfo refreshed = InternalRequest.send("/account/refresh", clientConfig, UserTokenInfo.class, requestOptions);
-        clientConfig.getOnUserTokenInfoUpdated().accept(userTokenInfo);
-        return refreshed.getToken();
+        UserTokenInfo refreshedTokenInfo = InternalRequest.send("/account/refresh", clientConfig, UserTokenInfo.class, requestOptions);
+        clientConfig.getOnUserTokenInfoUpdated().accept(refreshedTokenInfo);
+        return refreshedTokenInfo.getToken();
     }
 
 
